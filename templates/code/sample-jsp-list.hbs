@@ -1,0 +1,194 @@
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
+<%@ taglib prefix="c"       uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form"    uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="ui"      uri="http://egovframework.gov/ctl/ui" %>
+<%@ taglib prefix="spring"  uri="http://www.springframework.org/tags" %>
+
+{{~setVar "DQ" "\""~}}
+{{~setVar "listPath" (concat "/" classNameFirstCharLower "/" className "List.do")~}}
+{{~setVar "addViewPath" (concat "/" classNameFirstCharLower "/add" className "View.do")~}}
+{{~setVar "updateViewPath" (concat "/" classNameFirstCharLower "/update" className "View.do")~}}
+{{~setVar "listPageName" (concat className "List.jsp")~}}
+{{~setVar "selectFunctionName" (concat "fncSelect" className)~}}
+{{~setVar "selectFunctionNameList" (concat "fncSelect" className "List")~}}
+{{~setVar "addViewFunctionName" (concat "fncAdd" className "View")~}}
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>목록</title>
+  <link rel="stylesheet" href="<c:url value='/css/egovframework/sample.css'/>"/>
+  <script type="text/javascript">
+    <!--
+    /* 글 수정 화면 function */
+    function {{selectFunctionName}}({{#if pkAttributes.length}}{{#each pkAttributes}}{{this.ccName}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}{{attributes.[0].ccName}}{{/if}}) {
+      {{#if pkAttributes.length}}
+        {{#each pkAttributes}}
+      document.getElementById("listForm").{{this.ccName}}.value = {{this.ccName}};
+        {{/each}}
+      {{else}}
+      document.getElementById("listForm").{{attributes.[0].ccName}}.value = {{attributes.[0].ccName}};
+      {{/if}}
+      document.getElementById("listForm").action = "<c:url value='{{updateViewPath}}' />";
+      document.getElementById("listForm").submit();
+    }
+
+    /* 글 등록 화면 function */
+    function {{addViewFunctionName}}() {
+      document.getElementById("listForm").action = "<c:url value='{{addViewPath}}' />";
+      document.getElementById("listForm").submit();
+    }
+
+    /* 글 목록 화면 function */
+    function {{selectFunctionNameList}}() {
+      document.getElementById("listForm").action = "<c:url value='{{listPath}}'/>";
+      document.getElementById("listForm").submit();
+    }
+
+    /* pagination 페이지 링크 function */
+    function fn_egov_link_page(pageNo) {
+      document.getElementById("listForm").pageIndex.value = pageNo;
+      document.getElementById("listForm").action = "<c:url value='{{listPath}}' />";
+      document.getElementById("listForm").submit();
+    }
+    //-->
+  </script>
+</head>
+<body>
+  <form:form modelAttribute="searchVO" id="listForm" name="listForm" method="get">
+    {{#if pkAttributes.length}}
+      {{#each pkAttributes}}
+    <input type="hidden" name="{{this.ccName}}" />
+      {{/each}}
+    {{else}}
+    <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+    <input type="hidden" name="{{attributes.[0].ccName}}" />
+    {{/if}}
+
+    <div id="content_pop">
+      <!-- 타이틀 -->
+      <div id="title">
+        <ul>
+          <li><img src="<c:url value='/images/egovframework/example/title_dot.gif' />" alt="title" /> List </li>
+        </ul>
+      </div>
+      <!-- // 타이틀 -->
+
+      <!-- Search -->
+      <div id="search">
+        <ul>
+          <li>
+            <label for="searchCondition" style="visibility:hidden;">Choose Search Condition</label>
+            <form:select path="searchCondition" cssClass="use">
+              {{#if pkAttributes.length}}         
+                {{#if (eq pkAttributes.length 1)}}
+                  {{!-- Case 1. PK 컬럼이 있고, 1개 뿐이라면 : PK 컬럼을 제외한 일반 컬럼 중 맨 앞의 1개와 PK 컬럼이 검색 조건 --}}
+                  {{~setVar "foundFirst" false~}}
+                  {{#each attributes}}
+                    {{#unless isPrimaryKey}}{{#unless @root.foundFirst}}
+              <form:option value="1" label="{{ccName}}" />
+                      {{~setVar "foundFirst" true~}}
+                    {{/unless}}{{/unless}}
+                  {{/each}}
+              <form:option value="0" label="{{pkAttributes.[0].ccName}}" />
+                {{else}}
+                  {{!-- Case 2. PK 컬럼이 있고, 2개 이상이라면 : PK 컬럼 2개가 검색 조건 --}}
+              <form:option value="1" label="{{pkAttributes.[1].ccName}}" />
+              <form:option value="0" label="{{pkAttributes.[0].ccName}}" />
+                {{/if}}
+              {{else}}
+                {{!-- Case 3. PK 컬럼이 없다면 : 일반 컬럼 앞 2개가 검색 조건 --}}
+              <form:option value="1" label="{{attributes.[1].ccName}}" />
+              <form:option value="0" label="{{attributes.[0].ccName}}" />
+              {{/if}}
+            </form:select>
+          </li>
+          <li>
+            <label for="searchKeyword" style="visibility:hidden;display:none;">Input Search Keyword</label>
+            <form:input path="searchKeyword" cssClass="txt" />
+          </li>
+          <li>
+            <span class="btn_blue_l">
+              <a href="javascript:{{selectFunctionNameList}}();">Search</a>
+              <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif'/>" style="margin-left:6px;" alt="" />
+            </span>
+          </li>
+        </ul>
+      </div>
+      <!-- /Search -->
+      
+      <!-- List -->
+      <div id="table">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+
+          <colgroup>
+            <col width="50"/>  <!-- 순번 컬럼 -->
+            {{#each attributes}}
+            <col/>
+            {{/each}}
+          </colgroup>
+
+          <tr>
+            <th align="center">No</th>
+            {{#each attributes}}
+            <th align="center">{{pcName}}</th>
+            {{/each}}
+          </tr>
+          
+          <c:forEach var="result" items="${resultList}" varStatus="status">
+            <tr>
+              <!-- 순번 계산 -->
+              <td align="center" class="listtd"><c:out value="${paginationInfo.totalRecordCount+1 - ((searchVO.pageIndex-1) * searchVO.pageSize + status.count)}"/></td>
+              
+              {{#each attributes}}
+                {{#if isPrimaryKey}}
+              <!-- PK 컬럼: 클릭 가능한 링크 -->
+              <td align="center" class="listtd">
+                <!-- 이 result 객체의 모든 PK 컬럼을 파라미터로 전달 -->
+                <a href="javascript:{{@root.selectFunctionName}}({{#each @root.pkAttributes}}'<c:out value="{{concat "${result." ccName "}"}}"/>'{{#unless @last}}, {{/unless}}{{/each}})">
+                  <c:out value="{{concat "${result." ccName "}"}}"/>
+                </a>&nbsp;
+              </td>
+                {{else}}
+                  {{#unless @root.pkAttributes.length}}
+                    {{#if @first}}
+              <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+              <td align="center" class="listtd"><c:out value="{{concat "${result." ccName "}" }}" />&nbsp;</td>
+                    {{else}}
+              <!-- 일반 컬럼: 단순 출력 -->
+              <td align="center" class="listtd"><c:out value="{{concat "${result." ccName "}" }}" />&nbsp;</td>
+                    {{/if}}
+                  {{else}}
+              <!-- 일반 컬럼: 단순 출력 -->
+              <td align="center" class="listtd"><c:out value="{{concat "${result." ccName "}" }}" />&nbsp;</td>
+                  {{/unless}}
+                {{/if}}
+              {{/each}}
+            </tr>
+          </c:forEach>
+        </table>
+      </div>
+      <!-- /List -->
+      
+      <!-- Pagination -->
+      <div id="paging">
+        <ui:pagination paginationInfo="${paginationInfo}" type="image" jsFunction="fn_egov_link_page" />
+        <form:hidden path="pageIndex" />
+      </div>
+      
+      <div id="sysbtn">
+        <ul>
+          <li>
+            <span class="btn_blue_l">
+              <a href="javascript:{{addViewFunctionName}}();">Register</a>
+              <img src="<c:url value='/images/egovframework/example/btn_bg_r.gif' />" style="margin-left:6px;" alt=""/>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </form:form>
+</body>
+</html>

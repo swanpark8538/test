@@ -1,0 +1,96 @@
+{{!-- Setting variables for the class and package names --}}
+{{~setVar "voPackage" (concat packageName ".service")~}}
+{{~setVar "voClassName" (concat className "VO")~}}
+{{~setVar "defaultVoClassName" (concat className "DefaultVO")~}}
+{{~setVar "mapperPackage" (concat packageName ".service.impl")~}}
+{{~setVar "mapperClassName" (concat className "Mapper")~}}
+{{~setVar "mapperName" (concat (lowercase className) "Mapper")~}}
+{{~setVar "mapperInstanceName" (lowercase className)~}}
+{{!-- Setting method names for CRUD operations --}}
+{{~setVar "insertMethodName" (concat "insert" className)~}}
+{{~setVar "updateMethodName" (concat "update" className)~}}
+{{~setVar "deleteMethodName" (concat "delete" className)~}}
+{{~setVar "selectMethodName" (concat "select" className)~}}
+{{~setVar "selectListMethodName" (concat "select" className "List")~}}
+{{~setVar "selectListTotCntMethodName" (concat "select" className "ListTotCnt")~}}
+{{!-- Setting query IDs for the SQL operations --}}
+{{~setVar "insertQueryId" (concat "insert" className)~}}
+{{~setVar "updateQueryId" (concat "update" className)~}}
+{{~setVar "deleteQueryId" (concat "delete" className)~}}
+{{~setVar "selectQueryId" (concat "select" className)~}}
+{{~setVar "selectListQueryId" (concat "select" className "List")~}}
+{{~setVar "selectListTotCntQueryId" (concat "select" className "ListTotCnt")~}}
+{{!-- Handlebars 템플릿으로 변환된 Mapper 파일 --}}
+package {{mapperPackage}};
+
+import java.util.List;
+
+import {{voPackage}}.{{voClassName}};
+import {{voPackage}}.{{defaultVoClassName}};
+
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+
+/**
+ * @Class Name : {{mapperClassName}}.java
+ * @Description : {{className}} Mapper Class
+ * @Modification Information
+ *
+ * @author {{author}}
+ * @since {{date}}
+ * @version {{version}}
+ * @see
+ *  
+ *  Copyright (C) All right reserved.
+ */
+
+@Mapper("{{mapperName}}")
+public interface {{mapperClassName}} {
+
+  /**
+   * {{tableName}}을 등록한다.
+   * @param vo - 등록할 정보가 담긴 {{voClassName}}
+   * @return 등록 결과
+   * @exception Exception
+   */
+  public void {{insertMethodName}}({{voClassName}} vo) throws Exception;
+
+  /**
+   * {{tableName}}을 수정한다.
+   * @param vo - 수정할 정보가 담긴 {{voClassName}}
+   * @return void형
+   * @exception Exception
+   */
+  public void {{updateMethodName}}({{voClassName}} vo) throws Exception;
+
+  /**
+   * {{tableName}}을 삭제한다.
+   * @param vo - 삭제할 정보가 담긴 {{voClassName}}
+   * @return void형 
+   * @exception Exception
+   */
+  public void {{deleteMethodName}}({{voClassName}} vo) throws Exception;
+
+  /**
+   * {{tableName}}을 조회한다.
+   * @param vo - 조회할 정보가 담긴 {{voClassName}}
+   * @return 조회한 {{tableName}}
+   * @exception Exception
+	 */
+	public {{voClassName}} {{selectMethodName}}({{voClassName}} vo) throws Exception;
+
+	/**
+	 * {{tableName}} 목록을 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 {{defaultVoClassName}}
+	 * @return {{tableName}} 목록
+	 * @exception Exception
+	 */
+	public List<?> {{selectListMethodName}}({{defaultVoClassName}} searchVO) throws Exception;
+
+	/**
+	 * {{tableName}} 총 갯수를 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 {{defaultVoClassName}}
+	 * @return {{tableName}} 총 갯수
+	 * @exception
+	 */
+	public int {{selectListTotCntMethodName}}({{defaultVoClassName}} searchVO);
+}

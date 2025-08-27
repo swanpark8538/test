@@ -1,0 +1,258 @@
+{{!-- Handlebars 템플릿 변환 --}}
+{{~setVar "controllerPackage" (concat packageName ".web")~}}
+{{~setVar "servicePackage" (concat packageName ".service")~}}
+package {{controllerPackage}};
+
+import java.util.List;
+
+import org.egovframe.rte.fdl.property.EgovPropertyService;
+import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springmodules.validation.commons.DefaultBeanValidator;
+
+import {{servicePackage}}.{{className}}Service;
+import {{servicePackage}}.{{className}}DefaultVO;
+import {{servicePackage}}.{{className}}VO;
+
+/**
+ * @Class Name : {{className}}Controller.java
+ * @Description : {{className}} Controller class
+ * @Modification Information
+ *
+ * @author {{author}}
+ * @since {{date}}
+ * @version {{version}}
+ * @see
+ *  
+ *  Copyright (C)  All right reserved.
+ */
+
+@Controller
+@SessionAttributes(types={{className}}VO.class)
+public class {{className}}Controller {
+
+    /** {{classNameFirstCharLower}}Service */
+    private final {{className}}Service {{classNameFirstCharLower}}Service;
+
+    /** EgovPropertyService */
+    private final EgovPropertyService propertiesService;
+
+    /** Validator */
+    // egovframe-Todo: Validator 적용시 아래 주석 코드 참고
+    //private final DefaultValidator validator;
+
+    public {{className}}Controller(
+        {{className}}Service {{classNameFirstCharLower}}Service,
+        EgovPropertyService propertiesService
+        // egovframe-Todo: Validator 적용시 아래 주석 코드 참고
+        //DefaultBeanValidator beanValidator
+    ){
+        this.{{classNameFirstCharLower}}Service = {{classNameFirstCharLower}}Service;
+        this.propertiesService = propertiesService;
+        // egovframe-Todo: Validator 적용시 아래 주석 코드 참고
+        //this.beanValidator = beanValidator;
+    }
+
+    /**
+    * {{tableName}} 목록 화면을 조회
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @return "{{classNameFirstCharLower}}/{{className}}List"
+    * @exception Exception
+    */
+    @RequestMapping(value="/{{classNameFirstCharLower}}/{{className}}List.do")
+    public String select{{className}}List(
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO,
+        ModelMap model
+    ) throws Exception {
+
+        /** EgovPropertyService.sample */
+        searchVO.setPageUnit(propertiesService.getInt("pageUnit"));
+        searchVO.setPageSize(propertiesService.getInt("pageSize"));
+
+        /** paging setting */
+        PaginationInfo paginationInfo = new PaginationInfo();
+        paginationInfo.setCurrentPageNo(searchVO.getPageIndex());
+        paginationInfo.setRecordCountPerPage(searchVO.getPageUnit());
+        paginationInfo.setPageSize(searchVO.getPageSize());
+
+        searchVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+        searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
+        searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+    
+        List<?> {{classNameFirstCharLower}}List = {{classNameFirstCharLower}}Service.select{{className}}List(searchVO);
+        model.addAttribute("resultList", {{classNameFirstCharLower}}List);
+        
+        int totCnt = {{classNameFirstCharLower}}Service.select{{className}}ListTotCnt(searchVO);
+        paginationInfo.setTotalRecordCount(totCnt);
+        model.addAttribute("paginationInfo", paginationInfo);
+        
+        return "{{classNameFirstCharLower}}/{{className}}List";
+  }
+  
+    /**
+    * {{tableName}} 등록 화면을 조회
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @param model - 모델 객체
+    * @return "{{classNameFirstCharLower}}/{{className}}Register"
+    * @exception Exception
+    */
+    @RequestMapping("/{{classNameFirstCharLower}}/add{{className}}View.do")
+    public String add{{className}}View(
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO,
+        Model model
+    ) throws Exception {
+        
+        model.addAttribute("{{classNameFirstCharLower}}VO", new {{className}}VO());
+        
+        return "{{classNameFirstCharLower}}/{{className}}Register";
+    }
+
+    /**
+    * {{tableName}} 등록
+    * @param {{classNameFirstCharLower}}VO - 등록할 정보가 담긴 {{className}}VO
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @param bindingResult - Validator 바인딩 결과
+    * @param status - SessionStatus 객체(세션 상태)
+    * @return "forward:/{{classNameFirstCharLower}}/{{className}}List.do"
+    * @exception Exception
+    */
+    @RequestMapping("/{{classNameFirstCharLower}}/add{{className}}.do")
+    public String add{{className}}(
+        {{className}}VO {{classNameFirstCharLower}}VO,
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO,
+        BindingResult bindingResult,
+        SessionStatus status
+    ) throws Exception {
+
+        // Server-Side Validation
+        // egovframe-Todo: Validator 적용시 아래 주석 코드 참고
+        //beanValidator.validate(searchVO, bindingResult);
+        //if(bindingResult.hasErrors()){
+        //    model.addAttribute("{{classNameFirstCharLower}}VO", {{classNameFirstCharLower}}VO);
+        //    return "{{classNameFirstCharLower}}/{{className}}Register";
+        //}
+
+        {{classNameFirstCharLower}}Service.insert{{className}}({{classNameFirstCharLower}}VO);
+        status.setComplete();
+        
+        return "forward:/{{classNameFirstCharLower}}/{{className}}List.do";
+    }
+
+    /**
+    * {{tableName}} 수정 화면 조회
+    {{#if pkAttributes.length}}
+        {{#each pkAttributes}}
+    * @param {{this.ccName}} - 수정할 {{tableName}}의 {{this.ccName}}
+        {{/each}}
+    {{else}}
+    * @param {{attributes.[0].ccName}} - 수정할 {{tableName}}의 {{attributes.[0].ccName}}
+    {{/if}}
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @param model - 모델 객체
+    * @return "{{classNameFirstCharLower}}/{{className}}Register"
+    * @exception Exception
+    */
+    @RequestMapping("/{{classNameFirstCharLower}}/update{{className}}View.do")
+    public String update{{className}}View(
+        {{#if pkAttributes.length}}
+            {{#each pkAttributes}}
+        @RequestParam("{{this.ccName}}") {{this.javaType}} {{this.ccName}},
+            {{/each}}
+        {{else}}
+        @RequestParam("{{attributes.[0].ccName}}") {{attributes.[0].javaType}} {{attributes.[0].ccName}},
+        {{/if}}
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO,
+        Model model
+    ) throws Exception {
+        
+        {{className}}VO {{classNameFirstCharLower}}VO = new {{className}}VO();
+        {{#if pkAttributes.length}}
+            {{#each pkAttributes}}
+        {{../classNameFirstCharLower}}VO.set{{this.pcName}}({{this.ccName}});
+            {{/each}}
+        {{else}}
+        // egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨
+        {{../classNameFirstCharLower}}VO.set{{attributes.[0].pcName}}({{attributes.[0].ccName}});
+        {{/if}}
+        // 변수명은 CoC 에 따라 {{classNameFirstCharLower}}VO
+        model.addAttribute(select{{className}}({{classNameFirstCharLower}}VO, searchVO));
+
+        return "{{classNameFirstCharLower}}/{{className}}Register";
+    }
+
+    /**
+    * {{tableName}} 조회
+    * @param {{classNameFirstCharLower}}VO - 조회할 정보가 담긴 {{className}}VO
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @return {{className}}VO
+    * @exception Exception
+    */
+    public {{className}}VO select{{className}}(
+        {{className}}VO {{classNameFirstCharLower}}VO,
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO
+    ) throws Exception {
+        
+        return {{classNameFirstCharLower}}Service.select{{className}}({{classNameFirstCharLower}}VO);
+    }
+
+    /**
+    * {{tableName}} 수정
+    * @param {{classNameFirstCharLower}}VO - 수정할 정보가 담긴 {{className}}VO
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @param bindingResult - Validator 바인딩 결과
+    * @param status - SessionStatus 객체(세션 상태)
+    * @return "forward:/{{classNameFirstCharLower}}/{{className}}List.do"
+    * @exception Exception
+    */
+    @RequestMapping("/{{classNameFirstCharLower}}/update{{className}}.do")
+    public String update{{className}}(
+        {{className}}VO {{classNameFirstCharLower}}VO,
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO,
+        BindingResult bindingResult,
+        SessionStatus status
+    ) throws Exception {
+
+
+        // Server-Side Validation
+        // egovframe-Todo: Validator 적용시 아래 주석 코드 참고
+        //beanValidator.validate(searchVO, bindingResult);
+        //if(bindingResult.hasErrors()){
+        //    model.addAttribute("{{classNameFirstCharLower}}VO", {{classNameFirstCharLower}}VO);
+        //    return "{{classNameFirstCharLower}}/{{className}}Register";
+        //}
+
+        {{classNameFirstCharLower}}Service.update{{className}}({{classNameFirstCharLower}}VO);
+        status.setComplete();
+        
+        return "forward:/{{classNameFirstCharLower}}/{{className}}List.do";
+    }
+
+    /**
+    * {{tableName}} 삭제
+    * @param {{classNameFirstCharLower}}VO - 삭제할 정보가 담긴 {{className}}VO
+    * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+    * @param status - SessionStatus 객체(세션 상태)
+    * @return "forward:/{{classNameFirstCharLower}}/{{className}}List.do"
+    * @exception Exception
+    */
+    @RequestMapping("/{{classNameFirstCharLower}}/delete{{className}}.do")
+    public String delete{{className}}(
+        {{className}}VO {{classNameFirstCharLower}}VO,
+        @ModelAttribute("searchVO") {{className}}DefaultVO searchVO,
+        SessionStatus status
+    ) throws Exception {
+
+        {{classNameFirstCharLower}}Service.delete{{className}}({{classNameFirstCharLower}}VO);
+        status.setComplete();
+
+        return "forward:/{{classNameFirstCharLower}}/{{className}}List.do";
+    }
+}

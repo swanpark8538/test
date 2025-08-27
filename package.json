@@ -1,0 +1,152 @@
+{
+	"name": "egovframe-vscode-initializr",
+	"displayName": "eGovFrame Initializr in VSCode",
+	"description": "eGovFrame project generator, CRUD code generator, and configuration tool for Visual Studio Code.",
+	"version": "0.1.0",
+	"icon": "assets/icons/icon.png",
+	"engines": {
+		"vscode": "^1.84.0"
+	},
+	"author": {
+		"name": "eGovFrame Center"
+	},
+	"license": "Apache-2.0",
+	"publisher": "egovframe",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/egovframework/egovframe-vscode-initializr"
+	},
+	"homepage": "https://www.egovframe.go.kr",
+	"categories": [
+		"Programming Languages",
+		"Snippets",
+		"Other"
+	],
+	"keywords": [
+		"egovframe",
+		"egov",
+		"spring",
+		"java",
+		"framework",
+		"government",
+		"initializr",
+		"generator",
+		"vscode"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "egovframe-ActivityBar",
+					"title": "eGov-Initializr (⌘+')",
+					"icon": "assets/icons/icon.svg",
+					"when": "isMac"
+				},
+				{
+					"id": "egovframe-ActivityBar",
+					"title": "eGov-Initializr (Ctrl+')",
+					"icon": "assets/icons/icon.svg",
+					"when": "isWindows"
+				},
+				{
+					"id": "egovframe-ActivityBar",
+					"title": "eGov-Initializr (Ctrl+')",
+					"icon": "assets/icons/icon.svg",
+					"when": "isLinux || !isMac && !isWindows"
+				}
+			]
+		},
+		"views": {
+			"egovframe-ActivityBar": [
+				{
+					"type": "webview",
+					"id": "egovframe.SidebarProvider",
+					"name": ""
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "egovframe.egovButtonClicked",
+				"title": "eGovFrame",
+				"icon": "assets/icons/egovframe.svg"
+			}
+		],
+		"keybindings": [],
+		"menus": {
+			"view/title": [
+				{
+					"command": "egovframe.egovButtonClicked",
+					"group": "navigation@1",
+					"when": "view == egovframe.SidebarProvider"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "egovframe.egovButtonClicked",
+					"group": "navigation@1",
+					"when": "activeWebviewPanelId == egovframe.TabPanelProvider"
+				}
+			]
+		},
+		"configuration": {
+			"title": "eGovFrame Initializr",
+			"properties": {}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run package",
+		"compile": "npm run check-types && npm run lint && node esbuild.js",
+		"watch": "npm-run-all -p watch:*",
+		"watch:esbuild": "node esbuild.js --watch",
+		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"package": "npm run check-types && npm run build:webview && npm run lint && node esbuild.js --production",
+		"check-types": "tsc --noEmit",
+		"lint": "eslint src --ext ts && eslint webview-ui/src --ext ts",
+		"format": "prettier . --check",
+		"format:fix": "prettier . --write --ignore-path .prettierignore",
+		"install:all": "npm install && cd webview-ui && npm install",
+		"dev:webview": "cd webview-ui && npm run dev",
+		"build:webview": "cd webview-ui && npm run build",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.{js,ts,tsx,jsx}": [
+			"prettier --write",
+			"eslint --fix"
+		],
+		"*.{json,md,yml,yaml}": [
+			"prettier --write"
+		]
+	},
+	"devDependencies": {
+		"@types/archiver": "^6.0.3",
+		"@types/fs-extra": "^11.0.4",
+		"@types/node": "20.x",
+		"@types/vscode": "^1.84.0",
+		"@typescript-eslint/eslint-plugin": "^7.14.1",
+		"@typescript-eslint/parser": "^7.11.0",
+		"@vscode/vsce": "^3.6.0",
+		"esbuild": "^0.25.0",
+		"eslint": "^8.57.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.5",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^3.3.3",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"archiver": "^7.0.1",
+		"extract-zip": "^2.0.1",
+		"fs-extra": "^11.2.0",
+		"get-folder-size": "^5.0.0",
+		"globby": "^14.1.0",
+		"handlebars": "^4.7.8",
+		"tree-sitter-wasms": "^0.1.12",
+		"web-tree-sitter": "^0.25.8"
+	}
+}

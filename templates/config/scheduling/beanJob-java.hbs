@@ -1,0 +1,30 @@
+package {{defaultPackageName}}.config;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
+import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
+
+@Configuration
+public class {{txtFileName}} {
+
+  // Job Detail Bean 설정
+  @Bean(name = "{{txtJobName}}")
+  public JobDetailFactoryBean {{txtJobName}}() {
+    JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
+    jobDetailFactory.setJobClass({{txtServiceClass}}.class); // QuartzJobBean 구현 클래스
+
+    {{#if chkProperty}}
+    Map<String, Object> jobDataMap = new HashMap<>();
+    jobDataMap.put("{{txtPropertyName}}", "{{txtPropertyValue}}");
+    jobDetailFactory.setJobDataAsMap(jobDataMap);
+    {{/if}}
+    return jobDetailFactory;
+  }
+}

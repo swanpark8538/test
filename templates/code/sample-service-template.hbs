@@ -1,0 +1,88 @@
+{{!-- Set variables for package and class names --}}
+{{~setVar "servicePackage" (concat packageName ".service")~}}
+{{~setVar "voPackage" (concat servicePackage "." className "VO")~}}
+{{~setVar "defaultVoPackage" (concat servicePackage "." className "DefaultVO")~}}
+{{~setVar "voClassName" (concat className "VO")~}}
+{{~setVar "defaultVoClassName" (concat className "DefaultVO")~}}
+{{~setVar "serviceClassName" (concat className "Service")~}}
+{{!-- Set variables for method names --}}
+{{~setVar "insertMethodName" (concat "insert" className)~}}
+{{~setVar "updateMethodName" (concat "update" className)~}}
+{{~setVar "deleteMethodName" (concat "delete" className)~}}
+{{~setVar "selectMethodName" (concat "select" className)~}}
+{{~setVar "selectListMethodName" (concat "select" className "List")~}}
+{{~setVar "selectListTotCntMethodName" (concat "select" className "ListTotCnt")~}}
+package {{servicePackage}};
+
+import java.util.List;
+{{#if (eq voPackage voPackage)}}
+// Vo 객체에 대한 import 구문
+import {{servicePackage}}.{{defaultVoClassName}};
+import {{servicePackage}}.{{voClassName}};
+{{else}}
+import {{defaultVoPackage}};
+import {{voPackage}};
+{{/if}}
+
+/**
+ * @Class Name : {{serviceClassName}}.java
+ * @Description : {{className}} Business class
+ * @Modification Information
+ *
+ * @author {{author}}
+ * @since {{date}}
+ * @version {{version}}
+ * @see
+ *  
+ *  Copyright (C)  All right reserved.
+ */
+public interface {{serviceClassName}} {
+	
+	/**
+	 * {{tableName}}을 등록한다.
+	 * @param vo - 등록할 정보가 담긴 {{voClassName}}
+	 * @return void형
+	 * @exception Exception
+	 */
+	void {{insertMethodName}}({{voClassName}} vo) throws Exception;
+
+	/**
+	 * {{tableName}}을 수정한다.
+	 * @param vo - 수정할 정보가 담긴 {{voClassName}}
+	 * @return void형
+	 * @exception Exception
+	 */
+	void {{updateMethodName}}({{voClassName}} vo) throws Exception;
+
+	/**
+	 * {{tableName}}을 삭제한다.
+	 * @param vo - 삭제할 정보가 담긴 {{voClassName}}
+	 * @return void형 
+	 * @exception Exception
+	 */
+	void {{deleteMethodName}}({{voClassName}} vo) throws Exception;
+
+	/**
+	 * {{tableName}}을 조회한다.
+	 * @param vo - 조회할 정보가 담긴 {{voClassName}}
+	 * @return 조회한 {{tableName}}
+	 * @exception Exception
+	 */
+	{{voClassName}} {{selectMethodName}}({{voClassName}} vo) throws Exception;
+
+	/**
+	 * {{tableName}} 목록을 조회한다.
+	 * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+	 * @return {{tableName}} 목록
+	 * @exception Exception
+	 */
+	List<?> {{selectListMethodName}}({{defaultVoClassName}} searchVO) throws Exception;
+
+	/**
+	 * {{tableName}} 총 갯수를 조회한다.
+	 * @param searchVO - 목록 조회조건 정보가 담긴 {{className}}DefaultVO
+	 * @return {{tableName}} 총 갯수
+	 * @exception
+	 */
+	int {{selectListTotCntMethodName}}({{defaultVoClassName}} searchVO);
+}

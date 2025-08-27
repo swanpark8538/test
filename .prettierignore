@@ -1,0 +1,21 @@
+dist/
+node_modules
+webview-ui/build/
+*.md
+package-lock.json
+
+# Handlebars templates (contain mixed XML and Handlebars syntax)
+templates/**/*.hbs
+webview-ui/src/components/egov/templates/config/**/*.hbs
+
+# XML files
+*.xml
+
+# Template files with mixed syntax
+templates/code/*.hbs
+templates/config/**/*.hbs
+
+# egovframe-pack directory templates
+egovframe-pack/templates/**/*.hbs
+egovframe-pack/templates/code/*.hbs
+egovframe-pack/templates/config/**/*.hbs

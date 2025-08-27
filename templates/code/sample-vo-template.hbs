@@ -1,0 +1,36 @@
+{{!-- Setting the package and class names --}}
+{{~setVar "voPackage" (concat packageName ".service")~}}
+{{~setVar "voClassName" (concat className "VO")~}}
+{{~setVar "defaultVoClassName" (concat className "DefaultVO")~}}
+package {{packageName}}.service;
+
+/**
+ * @Class Name : {{className}}VO.java
+ * @Description : {{className}} VO class
+ * @Modification Information
+ *
+ * @author {{author}}
+ * @since {{date}}
+ * @version {{version}}
+ * @see
+ *  
+ *  Copyright (C)  All right reserved.
+ */
+public class {{className}}VO extends {{className}}DefaultVO {
+  private static final long serialVersionUID = 1L;
+    
+  {{#each attributes}}
+  /** {{this.columnName}} */
+  private {{this.javaType}} {{this.ccName}};
+  {{/each}}
+
+  {{#each attributes}}
+  public {{this.javaType}} get{{this.pcName}}() {
+    return this.{{this.ccName}};
+  }
+
+  public void set{{this.pcName}}({{this.javaType}} {{this.ccName}}) {
+    this.{{this.ccName}} = {{this.ccName}};
+  }
+  {{/each}}
+}

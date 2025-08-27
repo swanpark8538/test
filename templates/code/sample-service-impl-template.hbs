@@ -1,0 +1,149 @@
+{{!-- Setting variables for packages and class names --}}
+{{~setVar "serviceImplPackage" (concat packageName ".service.impl")~}}
+{{~setVar "servicePackage" (concat packageName ".service")~}}
+{{~setVar "voPackage" (concat servicePackage "." className "VO")~}}
+{{~setVar "voClassName" (concat className "VO")~}}
+{{~setVar "defaultVoClassName" (concat className "DefaultVO")~}}
+{{~setVar "daoPackage" (concat serviceImplPackage "." className "DAO")~}}
+{{~setVar "daoClassName" (concat className "DAO")~}}
+{{~setVar "daoName" (lowercase className)~}}
+{{~setVar "daoInstanceName" (concat (lowercase className) "DAO")~}}
+{{~setVar "mapperPackage" serviceImplPackage~}}
+{{~setVar "mapperClassName" (concat className "Mapper")~}}
+{{~setVar "mapperInstanceName" (lowercase className)~}}
+{{~setVar "serviceClassName" (concat className "Service")~}}
+{{~setVar "serviceImplClassName" (concat className "ServiceImpl")~}}
+{{~setVar "serviceName" (concat (lowercase className) "Service")~}}
+{{!-- Setting variables for method names --}}
+{{~setVar "insertMethodName" (concat "insert" className)~}}
+{{~setVar "updateMethodName" (concat "update" className)~}}
+{{~setVar "deleteMethodName" (concat "delete" className)~}}
+{{~setVar "selectMethodName" (concat "select" className)~}}
+{{~setVar "selectListMethodName" (concat "select" className "List")~}}
+{{~setVar "selectListTotCntMethodName" (concat "select" className "ListTotCnt")~}}
+{{!-- Setting ID generator service --}}
+{{~setVar "idGnrService" (concat (lowercase className) "IdGnrService")~}}
+package {{serviceImplPackage}};
+
+import java.util.List;
+
+import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import {{servicePackage}}.{{serviceClassName}};
+import {{servicePackage}}.{{defaultVoClassName}};
+import {{servicePackage}}.{{voClassName}};
+
+/**
+ * @Class Name : {{serviceImplClassName}}.java
+ * @Description : {{className}} Business Implement class
+ * @Modification Information
+ *
+ * @author {{author}}
+ * @since {{createDate}}
+ * @version 1.0
+ * @see
+ *  
+ *  Copyright (C)  All right reserved.
+ */
+
+@Service("{{serviceName}}")
+public class {{serviceImplClassName}} extends EgovAbstractServiceImpl implements {{serviceClassName}} {
+        
+	private static final Logger LOGGER = LoggerFactory.getLogger({{serviceImplClassName}}.class);
+
+    /** {{daoInstanceName}} */
+	private final {{mapperClassName}} {{daoInstanceName}};
+
+	/** ID Generation */
+	private final EgovIdGnrService egovIdGnrService;
+
+    public {{serviceImplClassName}}(
+        {{mapperClassName}} {{daoInstanceName}},
+        EgovIdGnrService egovIdGnrService // egovframe-Todo: 별도의 ID Generation 적용시(예를 들어 bean name = {{idGnrService}}), 이 line 앞에 @Qualifier("{{idGnrService}}") 코드 활용
+    ){
+        this.{{daoInstanceName}} = {{daoInstanceName}};
+        this.egovIdGnrService = egovIdGnrService;
+    }
+
+	/**
+	 * {{tableName}}을 등록한다.
+	 * @param vo - 등록할 정보가 담긴 {{voClassName}}
+	 * @return void형
+	 * @exception Exception
+	 */
+	public void {{insertMethodName}}({{voClassName}} vo) throws Exception {
+		LOGGER.debug(vo.toString());
+
+        {{#if pkAttributes.length}}
+        /** ID Generation Service */
+            {{#each pkAttributes}}
+                {{#unless @first}}
+        // egovframe-Todo: PK가 복수일 경우 다수의 ID Generation Bean을 적용해야 하는지 검토 필요
+                {{/unless}}
+        String {{this.ccName}} = egovIdGnrService.getNextStringId();
+        vo.set{{this.pcName}}({{this.ccName}});
+            {{/each}}
+        LOGGER.debug(vo.toString());
+        {{/if}}
+
+		{{daoInstanceName}}.{{insertMethodName}}(vo);
+	}
+
+	/**
+	 * {{tableName}}을 수정한다.
+	 * @param vo - 수정할 정보가 담긴 {{voClassName}}
+	 * @return void형
+	 * @exception Exception
+	 */
+	public void {{updateMethodName}}({{voClassName}} vo) throws Exception {
+    {{daoInstanceName}}.{{updateMethodName}}(vo);
+	}
+
+  /**
+	 * {{tableName}}을 삭제한다.
+	 * @param vo - 삭제할 정보가 담긴 {{voClassName}}
+	 * @return void형 
+	 * @exception Exception
+	 */
+  public void {{deleteMethodName}}({{voClassName}} vo) throws Exception {
+    {{daoInstanceName}}.{{deleteMethodName}}(vo);
+  }
+
+  /**
+	 * {{tableName}}을 조회한다.
+	 * @param vo - 조회할 정보가 담긴 {{voClassName}}
+	 * @return 조회한 {{tableName}}
+	 * @exception Exception
+	 */
+  public {{voClassName}} {{selectMethodName}}({{voClassName}} vo) throws Exception {
+		{{voClassName}} resultVO = {{daoInstanceName}}.{{selectMethodName}}(vo);
+		if (resultVO == null)
+			throw processException("info.nodata.msg");
+		return resultVO;
+  }
+
+  /**
+	 * {{tableName}} 목록을 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 VO
+	 * @return {{tableName}} 목록
+	 * @exception Exception
+	 */
+  public List<?> {{selectListMethodName}}({{defaultVoClassName}} searchVO) throws Exception {
+    return {{daoInstanceName}}.{{selectListMethodName}}(searchVO);
+  }
+
+  /**
+	 * {{tableName}} 총 갯수를 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 VO
+	 * @return {{tableName}} 총 갯수
+	 * @exception
+	 */
+  public int {{selectListTotCntMethodName}}({{defaultVoClassName}} searchVO) {
+		return {{daoInstanceName}}.{{selectListTotCntMethodName}}(searchVO);
+	}
+}

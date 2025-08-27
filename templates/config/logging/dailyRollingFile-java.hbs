@@ -1,0 +1,41 @@
+package {{defaultPackageName}}.config;
+
+import org.apache.log4j.DailyRollingFileAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class {{txtFileName}} {
+
+  @Bean
+  public DailyRollingFileAppender {{txtAppenderName}}() {
+    PatternLayout layout = new PatternLayout();
+    layout.setConversionPattern("{{txtConversionPattern}}");
+
+    DailyRollingFileAppender appender = new DailyRollingFileAppender();
+    appender.setFile("{{txtLogFileName}}");
+    appender.setAppend({{cboAppend}});
+    appender.setDatePattern("{{txtDatePattern}}");
+    appender.setLayout(layout);
+    return appender;
+  }
+
+  @Bean
+  public Logger springLogger() {
+    Logger logger = Logger.getLogger("org.springframework");
+    logger.setAdditivity(false);
+    logger.setLevel(org.apache.log4j.Level.DEBUG);
+    logger.addAppender({{txtAppenderName}}());
+    return logger;
+  }
+
+  @Bean
+  public Logger rootLogger() {
+    Logger rootLogger = Logger.getRootLogger();
+    rootLogger.setLevel(org.apache.log4j.Level.OFF);
+    rootLogger.addAppender({{txtAppenderName}}());
+    return rootLogger;
+  }
+}

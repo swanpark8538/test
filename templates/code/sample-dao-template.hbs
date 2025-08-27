@@ -1,0 +1,107 @@
+{{!-- Handlebars 템플릿 변환 --}}
+{{!-- 패키지 및 클래스 설정 --}}
+{{~setVar "voPackage" (concat packageName ".service")~}}
+{{~setVar "voClassName" (concat className "VO")~}}
+{{~setVar "defaultVoClassName" (concat className "DefaultVO")~}}
+{{~setVar "daoPackage" (concat packageName ".service.impl")~}}
+{{~setVar "daoClassName" (concat className "DAO")~}}
+{{~setVar "daoName" (concat classNameFirstCharLower "DAO")~}}
+{{~setVar "daoInstanceName" (concat classNameFirstCharLower "DAO")~}}
+{{~setVar "insertMethodName" (concat "insert" className)~}}
+{{~setVar "updateMethodName" (concat "update" className)~}}
+{{~setVar "deleteMethodName" (concat "delete" className)~}}
+{{~setVar "selectMethodName" (concat "select" className)~}}
+{{~setVar "selectListMethodName" (concat "select" className "List")~}}
+{{~setVar "selectListTotCntMethodName" (concat "select" className "ListTotCnt")~}}
+{{~setVar "insertQueryId" (concat daoInstanceName ".insert" className)~}}
+{{~setVar "updateQueryId" (concat daoInstanceName ".update" className)~}}
+{{~setVar "deleteQueryId" (concat daoInstanceName ".delete" className)~}}
+{{~setVar "selectQueryId" (concat daoInstanceName ".select" className)~}}
+{{~setVar "selectListQueryId" (concat daoInstanceName ".select" className "List")~}}
+{{~setVar "selectListTotCntQueryId" (concat daoInstanceName ".select" className "ListTotCnt")~}}
+package {{daoPackage}};
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import org.egovframe.rte.psl.dataaccess.EgovAbstractMapper;
+import {{voPackage}}.{{voClassName}};
+import {{voPackage}}.{{defaultVoClassName}};
+
+/**
+ * @Class Name : {{daoClassName}}.java
+ * @Description : {{className}} DAO Class
+ * @Modification Information
+ *
+ * @author {{author}}
+ * @since {{date}}
+ * @version {{version}}
+ * @see
+ *  
+ *  Copyright (C)  All right reserved.
+ */
+
+@Repository("{{daoName}}")
+public class {{daoClassName}} extends EgovAbstractMapper {
+
+	/**
+	 * {{tableName}}을 등록한다.
+	 * @param vo - 등록할 정보가 담긴 {{voClassName}}
+	 * @return 등록 결과
+	 * @exception Exception
+	 */
+	public void {{insertMethodName}}({{voClassName}} vo) throws Exception {
+		insert("{{insertQueryId}}", vo);
+	}
+
+	/**
+	 * {{tableName}}을 수정한다.
+	 * @param vo - 수정할 정보가 담긴 {{voClassName}}
+	 * @return void형
+	 * @exception Exception
+	 */
+	public void {{updateMethodName}}({{voClassName}} vo) throws Exception {
+		update("{{updateQueryId}}", vo);
+	}
+
+	/**
+	 * {{tableName}}을 삭제한다.
+	 * @param vo - 삭제할 정보가 담긴 {{voClassName}}
+	 * @return void형 
+	 * @exception Exception
+	 */
+	public void {{deleteMethodName}}({{voClassName}} vo) throws Exception {
+		delete("{{deleteQueryId}}", vo);
+	}
+
+	/**
+	 * {{tableName}}을 조회한다.
+	 * @param vo - 조회할 정보가 담긴 {{voClassName}}
+	 * @return 조회한 {{tableName}}
+	 * @exception Exception
+	 */
+	public {{voClassName}} {{selectMethodName}}({{voClassName}} vo) throws Exception {
+		return ({{voClassName}}) selectOne("{{selectQueryId}}", vo);
+	}
+
+	/**
+	 * {{tableName}} 목록을 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 List<{{defaultVoClassName}}>
+	 * @return {{tableName}} 목록
+	 * @exception Exception
+	 */
+	public List<{{defaultVoClassName}}> {{selectListMethodName}}({{defaultVoClassName}} searchVO) throws Exception {
+		return selectList("{{selectListQueryId}}", searchVO);
+	}
+
+	/**
+	 * {{tableName}} 총 갯수를 조회한다.
+	 * @param searchVO - 조회할 정보가 담긴 Map
+	 * @return {{tableName}} 총 갯수
+	 * @exception
+	 */
+	public int {{selectListTotCntMethodName}}({{defaultVoClassName}} searchVO) {
+		return (Integer) selectOne("{{selectListTotCntQueryId}}", searchVO);
+	}
+}

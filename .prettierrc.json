@@ -1,0 +1,16 @@
+{
+	"tabWidth": 4,
+	"useTabs": true,
+	"printWidth": 130,
+	"semi": false,
+	"bracketSameLine": true,
+	"endOfLine": "lf",
+	"overrides": [
+		{
+			"files": "*.hbs",
+			"options": {
+				"parser": "html"
+			}
+		}
+	]
+}

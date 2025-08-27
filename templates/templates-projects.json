@@ -1,0 +1,102 @@
+[
+	{
+		"displayName": "eGovFrame Web Project",
+		"fileName": "example-web.zip",
+		"pomFile": "example-web-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Template Project > Simple Homepage",
+		"fileName": "example-template-simple.zip",
+		"pomFile": "example-template-simple-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Template Project > Portal Site",
+		"fileName": "example-template-portal.zip",
+		"pomFile": "example-template-portal-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Template Project > Enterprise Business",
+		"fileName": "example-template-enterprise.zip",
+		"pomFile": "example-template-enterprise-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Template Project > Common All-in-one",
+		"fileName": "egovframework-all-in-oneAllNew_wizard.zip",
+		"pomFile": "egovframework-all-in-oneAllNew_wizard-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Mobile Project",
+		"fileName": "example-mbl-web.zip",
+		"pomFile": "mobile-web-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Mobile Template Project",
+		"fileName": "egovframework-all-in-one-mobile-4.3.0.zip",
+		"pomFile": "mobile-template-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame DeviceAPI Web Project",
+		"fileName": "DeviceAPI_WEBService_Guide_V4.3.0.zip",
+		"pomFile": ""
+	},
+	{
+		"displayName": "eGovFrame Boot Web Project",
+		"fileName": "example-boot-web.zip",
+		"pomFile": "example-boot-web-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Template Project > Simple Homepage (Backend)",
+		"fileName": "egovframe-template-simple-backend.zip",
+		"pomFile": "template-Web-Boot-Simple-Homepage-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Template Project > Simple Homepage (Frontend)",
+		"fileName": "egovframe-template-simple-react.zip",
+		"pomFile": ""
+	},
+	{
+		"displayName": "eGovFrame MSA Boot Template Project > Common Components (KRDS)",
+		"fileName": "egovframe-common-components-msa-krds-4.3.1.zip",
+		"pomFile": ""
+	},
+	{
+		"displayName": "eGovFrame MSA Boot Template Project > Portal (Backend)",
+		"fileName": "egovframe-msa-portal-backend.zip",
+		"pomFile": ""
+	},
+	{
+		"displayName": "eGovFrame MSA Boot Template Project > Portal (Frontend)",
+		"fileName": "egovframe-msa-portal-frontend.zip",
+		"pomFile": ""
+	},
+	{
+		"displayName": "eGovFrame Boot Batch Template Project > Scheduler (File)",
+		"fileName": "egovframework.rte.bat.template.sam.scheduler.zip",
+		"pomFile": "batch-sam-scheduler-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Batch Template Project > CommandLine (File)",
+		"fileName": "egovframework.rte.bat.template.sam.commandline.zip",
+		"pomFile": "batch-sam-commandline-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Batch Template Project > Web (File)",
+		"fileName": "egovframework.rte.bat.template.sam.web.zip",
+		"pomFile": "batch-sam-web-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Batch Template Project > Scheduler (DB)",
+		"fileName": "egovframework.rte.bat.template.db.scheduler.zip",
+		"pomFile": "batch-db-scheduler-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Batch Template Project > CommandLine (DB)",
+		"fileName": "egovframework.rte.bat.template.db.commandline.zip",
+		"pomFile": "batch-db-commandline-pom.xml"
+	},
+	{
+		"displayName": "eGovFrame Boot Batch Template Project > Web (DB)",
+		"fileName": "egovframework.rte.bat.template.db.web.zip",
+		"pomFile": "batch-db-web-pom.xml"
+	}
+]

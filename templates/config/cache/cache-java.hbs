@@ -1,0 +1,45 @@
+package {{defaultPackageName}}.config;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class {{txtFileName}} {
+
+  @Bean
+  public CacheManager cacheManager() {
+    CacheConfiguration defaultCacheConfig = new CacheConfiguration()
+      .maxEntriesLocalHeap({{txtDftMaxElements}})
+      .eternal({{txtDftEternal}})
+      .timeToIdleSeconds({{txtDftIdelTime}})
+      .timeToLiveSeconds({{txtDftLiveTime}})
+      .overflowToDisk({{txtDftOverfow}})
+      .diskPersistent({{txtDftDiskPersistence}})
+      .diskExpiryThreadIntervalSeconds({{txtDftDiskExpiry}});
+
+    CacheConfiguration customCacheConfig = new CacheConfiguration()
+      .name("{{txtCacheName}}")
+      .maxEntriesLocalHeap({{txtMaxElements}})
+      .eternal({{txtEternal}})
+      .timeToIdleSeconds({{txtIdleTime}})
+      .timeToLiveSeconds({{txtLiveTime}})
+      .overflowToDisk({{txtOverflowToDisk}})
+      .diskPersistent({{txtDiskPersistent}})
+      .memoryStoreEvictionPolicy("{{cboMemoryPolicy}}");
+
+    net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration()
+      .diskStore(new net.sf.ehcache.config.DiskStoreConfiguration().path("{{txtDiskStore}}"))
+      .defaultCache(defaultCacheConfig)
+      .cache(customCacheConfig);
+
+    return CacheManager.newInstance(config);
+  }
+
+  @Bean
+  public Cache customCache(CacheManager cacheManager) {
+    return cacheManager.getCache("{{txtCacheName}}");
+  }
+}

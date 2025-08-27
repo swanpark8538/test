@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="{{namespace}}">
+  
+  <resultMap id="{{resultMapId}}" type="{{resultMapType}}">
+  {{#each attributes}}
+    <result property="{{ccName}}" column="{{columnName}}" />
+  {{/each}}
+  </resultMap>
+  
+  <insert id="insert{{tableName}}">
+      INSERT INTO {{tableName}} 
+      (
+{{#each attributes}}
+        {{#if @first}}{{columnName}}{{else}}, {{columnName}}{{/if}}
+{{/each}}
+      )
+      VALUES (
+{{#each attributes}}
+        {{#if @first}}{{concat "#" "{" ccName "}"}}{{else}}, {{concat "#" "{" ccName "}"}}{{/if}}
+{{/each}}
+      )
+  </insert>  
+
+  <update id="update{{tableName}}">
+      UPDATE {{tableName}}
+      SET
+{{#each attributes}}
+        {{#if @first}}{{columnName}} = {{concat "#" "{" ccName "}"}}{{else}}, {{columnName}} = {{concat "#" "{" ccName "}"}}{{/if}}
+{{/each}}
+      WHERE 
+{{#each pkAttributes}}
+        {{#if @first}}{{columnName}} = {{concat "#" "{" ccName "}"}}{{else}} AND {{columnName}} = {{concat "#" "{" ccName "}"}}{{/if}}
+{{/each}}
+{{#unless pkAttributes.length}}
+        <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+        {{attributes.[0].columnName}} = {{concat "#" "{" attributes.[0].ccName "}"}}
+{{/unless}}
+  </update>
+
+  <delete id="delete{{tableName}}">
+      DELETE FROM {{tableName}}
+      WHERE 
+{{#each pkAttributes}}
+        {{#if @first}}{{columnName}} = {{concat "#" "{" ccName "}"}}{{else}} AND {{columnName}} = {{concat "#" "{" ccName "}"}}{{/if}}
+{{/each}}
+{{#unless pkAttributes.length}}
+        <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+        {{attributes.[0].columnName}} = {{concat "#" "{" attributes.[0].ccName "}"}}
+{{/unless}}
+  </delete>
+
+  <select id="select{{tableName}}" resultMap="{{resultMapId}}">
+      SELECT
+{{#each attributes}}
+        {{#if @first}}{{columnName}}{{else}}, {{columnName}}{{/if}}
+{{/each}}
+      FROM {{tableName}}
+      WHERE 
+{{#each pkAttributes}}
+        {{#if @first}}{{columnName}} = {{concat "#" "{" ccName "}"}}{{else}} AND {{columnName}} = {{concat "#" "{" ccName "}"}}{{/if}}
+{{/each}}
+{{#unless pkAttributes.length}}
+        <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+        {{attributes.[0].columnName}} = {{concat "#" "{" attributes.[0].ccName "}"}}
+{{/unless}}
+  </select>
+
+  <select id="select{{tableName}}List" resultMap="{{resultMapId}}">
+      SELECT
+{{#each attributes}}
+        {{#if @first}}{{columnName}}{{else}}, {{columnName}}{{/if}}
+{{/each}}
+      FROM {{tableName}}
+      WHERE 1=1
+      <if test="searchKeyword != null and searchKeyword != ''">
+{{#if pkAttributes.length}}
+  {{#if (eq pkAttributes.length 1)}}
+    {{!-- Case 1: PK가 1개일 때 --}}
+        <if test="searchCondition == 0">
+          AND {{pkAttributes.[0].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+        <if test="searchCondition == 1">
+    {{~setVar "foundFirst" false~}}
+    {{#each attributes}}
+      {{#unless isPrimaryKey}}{{#unless @root.foundFirst}}
+          AND {{this.columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        {{~setVar "foundFirst" true~}}
+      {{/unless}}{{/unless}}
+    {{/each}}
+        </if>
+  {{else}}
+    {{!-- Case 2: PK가 2개 이상일 때 --}}
+        <if test="searchCondition == 0">
+          AND {{pkAttributes.[0].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+        <if test="searchCondition == 1">
+          AND {{pkAttributes.[1].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+  {{/if}}
+{{else}}
+  {{!-- Case 3: PK가 없을 때 --}}
+        <if test="searchCondition == 0">
+          AND {{attributes.[0].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+        <if test="searchCondition == 1">
+          AND {{attributes.[1].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+{{/if}}
+      </if>
+{{#if sortOrder}}
+      ORDER BY {{sortOrder}} DESC
+{{/if}}
+      LIMIT {{concat "#" "{" "recordCountPerPage" "}"}} OFFSET {{concat "#" "{" "firstIndex" "}"}}
+  </select>
+
+  <select id="select{{tableName}}ListTotCnt" resultType="int">
+      SELECT COUNT(*)
+      FROM {{tableName}}
+      WHERE 1=1
+      <if test="searchKeyword != null and searchKeyword != ''">
+{{#if pkAttributes.length}}
+  {{#if (eq pkAttributes.length 1)}}
+    {{!-- Case 1: PK가 1개일 때 --}}
+        <if test="searchCondition == 0">
+          AND {{pkAttributes.[0].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+        <if test="searchCondition == 1">
+    {{~setVar "foundFirst" false~}}
+    {{#each attributes}}
+      {{#unless isPrimaryKey}}{{#unless @root.foundFirst}}
+          AND {{this.columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        {{~setVar "foundFirst" true~}}
+      {{/unless}}{{/unless}}
+    {{/each}}
+        </if>
+  {{else}}
+    {{!-- Case 2: PK가 2개 이상일 때 --}}
+        <if test="searchCondition == 0">
+          AND {{pkAttributes.[0].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+        <if test="searchCondition == 1">
+          AND {{pkAttributes.[1].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+  {{/if}}
+{{else}}
+  {{!-- Case 3: PK가 없을 때 --}}
+        <if test="searchCondition == 0">
+          AND {{attributes.[0].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+        <if test="searchCondition == 1">
+          AND {{attributes.[1].columnName}} LIKE '%' || {{concat "#" "{" "searchKeyword" "}"}} || '%'
+        </if>
+{{/if}}
+      </if>
+  </select>
+</mapper>

@@ -1,0 +1,210 @@
+{{~setVar "DQ" "\""~}}
+{{~setVar "listPath" (concat "/" classNameFirstCharLower "/" className "List.do")~}}
+{{~setVar "addViewPath" (concat "/" classNameFirstCharLower "/add" className "View.do")~}}
+{{~setVar "updateViewPath" (concat "/" classNameFirstCharLower "/update" className "View.do")~}}
+{{~setVar "listPageName" (concat className "List.html")~}}
+{{~setVar "selectFunctionName" (concat "fncSelect" className)~}}
+{{~setVar "selectFunctionNameList" (concat "fncSelect" className "List")~}}
+{{~setVar "addViewFunctionName" (concat "fncAdd" className "View")~}}
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+  <title>{{className}} 목록</title>
+  <link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/egovframework/sample.css}">
+  <script type="text/javascript" th:src="@{/js/egovframework/jquery-3.6.1.min.js}"></script>
+  
+  <script th:inline="javascript">
+    document.addEventListener('keydown', function(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault();
+      };
+    }, true);
+
+    var contextPath = $('#contextPathHolder').attr('data-contextPath') ? $('#contextPathHolder').attr('data-contextPath') : '';
+    
+    function notNullCheck(value) {
+      return !(value === '' || value == null || (typeof value == 'object' && !Object.keys(value).length));
+    }
+
+    function {{selectFunctionNameList}}() {
+      if (notNullCheck($('#searchKeyword').val())) {
+        $.ajax({
+          url: contextPath + '{{listPath}}',
+          type: 'post',
+          data: {
+            searchCondition: $('#searchCondition option:selected').val(),
+            searchKeyword: $('#searchKeyword').val()
+          }
+        }).done(function(fragment) {
+          $('#content_pop').replaceWith(fragment);
+        });
+      } else {
+        alert('검색어를 입력해주세요.');
+      }
+    }
+
+    function fn_egov_link_page(pageIndex) {
+      $.ajax({
+        url: contextPath + '{{listPath}}',
+        type: 'post',
+        data: {
+          pageIndex: pageIndex,
+          searchCondition: $('#searchCondition option:selected').val(),
+          searchKeyword: $('#searchKeyword').val()
+        }
+      }).done(function(fragment) {
+        $('#content_pop').replaceWith(fragment);
+      });
+    }
+
+    function {{addViewFunctionName}}() {
+      $(location).attr('href', contextPath + '{{addViewPath}}');
+    }
+
+    function {{selectFunctionName}}({{#if pkAttributes.length}}{{#each pkAttributes}}{{this.ccName}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}{{attributes.[0].ccName}}{{/if}}) {
+      {{#if pkAttributes.length}}
+        {{#each pkAttributes}}
+      $('#{{this.ccName}}').val({{this.ccName}});
+        {{/each}}
+      {{else}}
+      $('#{{attributes.[0].ccName}}').val({{attributes.[0].ccName}});
+      {{/if}}
+      $('#detailForm').attr('method', 'post').attr('action', contextPath + '{{updateViewPath}}').submit();
+    }
+  </script>
+</head>
+
+<body style="text-align:center; margin:0 auto; display:inline; padding-top:100px;">
+
+  <div id="content_pop">
+
+    <!-- Title -->
+    <div id="title">
+      <ul>
+        <li>
+          <img th:src="@{/images/egovframework/example/title_dot.gif}" alt="title"/>
+          <span>{{className}} List</span>
+        </li>
+      </ul>
+    </div>
+
+    <form id="detailForm" th:object="${searchVO}">
+      {{#if pkAttributes.length}}
+        {{#each pkAttributes}}
+      <input type="hidden" id="{{this.ccName}}" name="{{this.ccName}}"/>
+        {{/each}}
+      {{else}}
+      <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+      <input type="hidden" id="{{attributes.[0].ccName}}" name="{{attributes.[0].ccName}}"/>
+      {{/if}}
+    </form>
+
+    <!-- Search -->
+    <div id="search">
+      <ul>
+        <li>
+          <label for="searchCondition" style="visibility:hidden;">Choose Search Condition</label>
+          <select id="searchCondition" name="searchCondition" class="use">
+            {{#if pkAttributes.length}}         
+              {{#if (eq pkAttributes.length 1)}}
+                {{!-- Case 1. PK 컬럼이 있고, 1개 뿐이라면 : PK 컬럼을 제외한 일반 컬럼 중 맨 앞의 1개와 PK 컬럼이 검색 조건 --}}
+                {{~setVar "foundFirst" false~}}
+                {{#each attributes}}
+                  {{#unless isPrimaryKey}}{{#unless @root.foundFirst}}
+            <option value="1" th:selected="${searchVO.searchCondition} == 1">{{ccName}}</option>
+                    {{~setVar "foundFirst" true~}}
+                  {{/unless}}{{/unless}}
+                {{/each}}
+            <option value="0" th:selected="${searchVO.searchCondition} == 0">{{pkAttributes.[0].ccName}}</option>
+              {{else}}
+                {{!-- Case 2. PK 컬럼이 있고, 2개 이상이라면 : PK 컬럼 2개가 검색 조건 --}}
+            <option value="1" th:selected="${searchVO.searchCondition} == 1">{{pkAttributes.[1].ccName}}</option>
+            <option value="0" th:selected="${searchVO.searchCondition} == 0">{{pkAttributes.[0].ccName}}</option>
+              {{/if}}
+            {{else}}
+              {{!-- Case 3. PK 컬럼이 없다면 : 일반 컬럼 앞 2개가 검색 조건 --}}
+            <option value="1" th:selected="${searchVO.searchCondition} == 1">{{attributes.[1].ccName}}</option>
+            <option value="0" th:selected="${searchVO.searchCondition} == 0">{{attributes.[0].ccName}}</option>
+            {{/if}}
+          </select>
+        </li>
+        <li>
+          <label for="searchKeyword" style="visibility:hidden;display:none;">Input Search Keyword</label>
+          <input type="text" id="searchKeyword" name="searchKeyword" th:value="${searchVO.searchKeyword}" class="txt"/>
+        </li>
+        <li>
+          <span class="btn_blue_l">
+            <span th:onclick="{{selectFunctionNameList}}()">Search</span>
+            <img th:src="@{/images/egovframework/example/btn_bg_r.gif}" style="margin-left:6px;" alt="Search"/>
+          </span>
+        </li>
+        <li>
+          <span class="btn_blue_l">
+            <span th:onclick="{{addViewFunctionName}}()">Register</span>
+            <img th:src="@{/images/egovframework/example/btn_bg_r.gif}" style="margin-left:6px;" alt="Register"/>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- List -->
+    <div id="table">
+      <table>
+        <caption style="visibility:hidden">{{className}} 목록 테이블</caption>
+        <colgroup>
+          <col th:width="50px"/>  <!-- 순번 컬럼 -->
+          {{#each attributes}}
+          <col/>
+          {{/each}}
+        </colgroup>
+        <tr>
+          <th>No</th>
+          {{#each attributes}}
+          <th><span>{{pcName}}</span></th>
+          {{/each}}
+        </tr>
+        <tr data-th-each="result, status : ${resultList}">
+          <!-- 순번 계산 -->
+          <td th:class="listtd" th:align="center">
+            [[${(paginationInfo.getTotalRecordCount()+1)-((searchVO.getPageIndex()-1)*paginationInfo.getPageSize()+status.count)}]]
+          </td>
+          
+          {{#each attributes}}
+            {{#if isPrimaryKey}}
+          <!-- PK 컬럼: 클릭 가능한 링크 -->
+          <td th:class="listtd" th:align="center">
+            <a th:onclick='{{@root.selectFunctionName}}({{#each @root.pkAttributes}}[[{{concat "${result." ccName "}"}}]]{{#unless @last}}, {{/unless}}{{/each}})'>[[{{concat "${result." ccName "}"}}]]</a>
+          </td>
+            {{else}}
+              {{#unless @root.pkAttributes.length}}
+                {{#if @first}}
+          <!-- egovframe-Warning: 첫 번째 컬럼이 PK 역할 수행하여 select 메서드의 SQL문의 WHERE 조건에 사용됨 -->
+          <td th:class="listtd" th:align="center">[[{{concat "${result." ccName "}"}}]]</td>
+                {{else}}
+          <!-- 일반 컬럼: 단순 출력 -->
+          <td th:class="listtd" th:align="center">[[{{concat "${result." ccName "}"}}]]</td>
+                {{/if}}
+              {{else}}
+          <!-- 일반 컬럼: 단순 출력 -->
+          <td th:class="listtd" th:align="center">[[{{concat "${result." ccName "}"}}]]</td>
+              {{/unless}}
+            {{/if}}
+          {{/each}}
+        </tr>
+      </table>
+    </div>
+
+    <!-- Paging -->
+    <div id="paging">
+      <span th:utext="${#egovPaginationFormat.paginationFormat(paginationInfo, 'fn_egov_link_page')}"></span>
+    </div>
+
+  </div>
+
+</body>
+
+</html>

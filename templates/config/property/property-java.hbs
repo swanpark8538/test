@@ -1,0 +1,46 @@
+package {{defaultPackageName}}.config;
+
+import org.egovframe.rte.fdl.property.impl.EgovPropertyServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+@Configuration
+public class {{txtFileName}} {
+
+  @Bean(name = "{{txtPropertyServiceName}}", destroyMethod = "destroy")
+  public EgovPropertyServiceImpl egovPropertyService() {
+    EgovPropertyServiceImpl egovPropertyService = new EgovPropertyServiceImpl();
+    
+    {{#if (eq rdoType "Internal Properties")}}
+    // properties 설정
+    Map<String, String> properties = new HashMap<>();
+    properties.put("{{txtKey}}", "{{txtValue}}");
+    egovPropertyService.setProperties(properties);
+    {{/if}}
+
+    {{#if (eq rdoType "External File")}}
+    // extFileName 설정
+    Set<Object> extFileNameSet = new HashSet<>();
+
+    // Map 정의
+    Map<String, String> extFileMap = new HashMap<>();
+    extFileMap.put("encoding", "{{cboEncoding}}");
+    extFileMap.put("filename", "{{txtPropertyFile}}");
+
+    // Set에 Map 추가
+    extFileNameSet.add(extFileMap);
+
+    // 필요시 주석에 있는 단일 값 추가
+    // extFileNameSet.add("{{txtPropertyFile}}");
+
+    egovPropertyService.setExtFileName(extFileNameSet);
+    {{/if}}
+    
+    return egovPropertyService;
+  }
+}
